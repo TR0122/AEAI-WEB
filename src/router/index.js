@@ -1,6 +1,8 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import Chat from '../components/Chat.vue'
 import LoginRegister from '../components/LoginRegister.vue'
+import PackagePurchase from '../components/PackagePurchase.vue'
+import PackageLoginRegister from '../components/PackageLoginRegister.vue'
 
 const routes = [
   {
@@ -16,6 +18,16 @@ const routes = [
     path: '/login',
     name: 'Login',
     component: LoginRegister
+  },
+  {
+    path: '/packages',
+    name: 'Packages',
+    component: PackagePurchase
+  },
+  {
+    path: '/package-login',
+    name: 'PackageLogin',
+    component: PackageLoginRegister
   }
 ]
 

@@ -156,13 +156,8 @@ const closeModal = () => {
   emit('close');
 };
 
-// 处理充值
-const handleRecharge = async () => {
-  if (!selectedOption.value) {
-    ElMessage.warning('请选择充值套餐');
-    return;
-  }
-  
+// 处理积分充值
+const handleRecharge = async (points) => {
   try {
     const userInfo = JSON.parse(localStorage.getItem('userInfo'));
     if (!userInfo?.id) {
@@ -170,17 +165,15 @@ const handleRecharge = async () => {
       return;
     }
 
-    // 设置创建订单的加载状态
     isCreatingOrder.value = true;
-    
-    // 先显示二维码弹窗，但内容为加载中
     showQRCode.value = true;
     qrCodeDataUrl.value = '';
 
     const response = await createPaymentOrder({
       userId: userInfo.id,
-      amount: selectedOption.value.price,
-      points: selectedOption.value.points,
+      orderType: 'POINTS',
+      amount: points.price,
+      value: points.points,
       paymentType: 'ALIPAY'
     });
 
@@ -189,7 +182,6 @@ const handleRecharge = async () => {
       orderId.value = response.data.orderId;
       paymentStatus.value = 'PENDING';
       
-      // 生成二维码
       try {
         qrCodeDataUrl.value = await QRCode.toDataURL(qrCodeUrl.value, {
           width: 200,
@@ -204,7 +196,6 @@ const handleRecharge = async () => {
         ElMessage.error('生成二维码失败');
       }
       
-      // 开始轮询支付结果
       startPollingPaymentResult();
     } else {
       ElMessage.error(response.msg || '创建支付订单失败');
@@ -214,7 +205,6 @@ const handleRecharge = async () => {
     ElMessage.error(error.msg || '创建支付订单失败');
     closeQRCode();
   } finally {
-    // 无论成功失败，都关闭创建订单的加载状态
     isCreatingOrder.value = false;
   }
 };
@@ -671,7 +661,7 @@ const handlePackagePurchase = async (pkg) => {
             <!-- 充值按钮 -->
             <button 
               class="recharge-btn" 
-              @click="handleRecharge"
+              @click="handleRecharge(selectedOption)"
               :disabled="!selectedOption || isCreatingOrder"
             >
               <span v-if="!isCreatingOrder">立即充值 ¥{{ currentAmount.toFixed(2) }}</span>

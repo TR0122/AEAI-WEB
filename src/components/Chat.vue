@@ -123,9 +123,9 @@ const selectChat = async (chat) => {
       response.data.forEach(msg => {
         // 添加用户消息
         if (msg.question) {
-          chatHistory.value.push({
+  chatHistory.value.push({
             id: msg.id,
-            role: 'user',
+    role: 'user',
             content: msg.question,
             type: msg.messageType,
             imageUrl: msg.userFileUrl,
@@ -136,9 +136,9 @@ const selectChat = async (chat) => {
         
         // 添加助手回复
         if (msg.result) {
-          chatHistory.value.push({
+    chatHistory.value.push({
             id: msg.id,
-            role: 'assistant',
+      role: 'assistant',
             content: msg.result,
             type: msg.messageType,
             imageUrl: msg.fileUrl,
@@ -310,11 +310,11 @@ onMounted(async () => {
       }
     }
     
-    // 初始化检查窗口大小
-    checkWindowSize();
-    
-    // 监听窗口大小变化
-    window.addEventListener('resize', checkWindowSize);
+  // 初始化检查窗口大小
+  checkWindowSize();
+  
+  // 监听窗口大小变化
+  window.addEventListener('resize', checkWindowSize);
     
     // 获取 textarea 元素并初始化高度
     const textarea = document.querySelector('textarea');
@@ -922,14 +922,14 @@ const openInNewTab = () => {
           <!-- 该时间组下的对话列表 -->
           <div 
             v-for="chat in group" 
-            :key="chat.id"
-            class="chat-item"
-            :class="{ 'active': selectedChat && selectedChat.id === chat.id }"
-          >
-            <div class="chat-item-content">
+          :key="chat.id"
+          class="chat-item"
+          :class="{ 'active': selectedChat && selectedChat.id === chat.id }"
+        >
+          <div class="chat-item-content">
               <div class="chat-info" @click="selectChat(chat)">
-                <div class="chat-title">{{ chat.title }}</div>
-              </div>
+              <div class="chat-title">{{ chat.title }}</div>
+            </div>
               <!-- 更多按钮和菜单 -->
               <div class="chat-actions">
                 <button 
@@ -951,7 +951,7 @@ const openInNewTab = () => {
                     <i class="fas fa-trash"></i>
                     删除
                   </button>
-                </div>
+          </div>
               </div>
             </div>
           </div>
@@ -1000,7 +1000,7 @@ const openInNewTab = () => {
                 <div class="image-error">
                   <i class="fas fa-image"></i>
                   <span>图片加载失败</span>
-                </div>
+            </div>
               </template>
             </el-image>
           </div>
@@ -1012,7 +1012,7 @@ const openInNewTab = () => {
               <span></span>
               <span></span>
               <span></span>
-            </div>
+        </div>
             <!-- 编辑状态 -->
             <div v-else-if="editingMessageIndex === index" class="edit-mode">
               <textarea
@@ -1101,10 +1101,10 @@ const openInNewTab = () => {
             <button class="action-btn" @click="triggerFileUpload" title="上传文件">
               <i class="fas fa-plus"></i>
             </button>
-            <button class="send-btn" @click="sendMessage">
+          <button class="send-btn" @click="sendMessage">
               <i class="fas fa-arrow-up"></i>
-            </button>
-          </div>
+          </button>
+        </div>
         </div>
       </div>
     </main>
@@ -2874,9 +2874,9 @@ a:focus {
 
 /* Webview 模态框样式 */
 .webview-modal {
-  position: fixed;
-  top: 0;
-  left: 0;
+    position: fixed;
+    top: 0;
+    left: 0;
   right: 0;
   bottom: 0;
   background: rgba(0, 0, 0, 0.5);

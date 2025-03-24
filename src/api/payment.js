@@ -5,7 +5,8 @@ import request from './request';
  * @param {Object} params
  * @param {number} params.userId - 用户ID
  * @param {number} params.amount - 支付金额
- * @param {number} params.points - 购买的积分数量
+ * @param {string} params.orderType - 订单类型，'POINTS'或'PACKAGE'
+ * @param {number} params.value - 购买的积分数量或软件包ID
  * @param {string} params.paymentType - 支付方式，默认为 'ALIPAY'
  * @returns {Promise}
  */
@@ -15,12 +16,10 @@ export const createPaymentOrder = (params) => {
     method: 'POST',
     data: {
       userId: params.userId,
-      orderType: 'POINTS',
+      orderType: params.orderType || 'POINTS', // 默认为积分订单
       amount: params.amount,
-      value: params.points,
-      paymentType: params.paymentType || 'ALIPAY',
-      returnUrl: window.location.origin + '/payment/return',
-      notifyUrl: window.location.origin + '/api/payment/notify/alipay'
+      value: params.value, // 积分数量或软件包ID
+      paymentType: params.paymentType || 'ALIPAY'
     }
   });
 };
