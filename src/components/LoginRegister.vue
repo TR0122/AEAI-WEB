@@ -162,9 +162,10 @@ const handleSendCode = async () => {
   }
 };
 
-import { useRouter } from 'vue-router';
+import { useRouter, useRoute } from 'vue-router';
 
 const router = useRouter();
+const route = useRoute();
 
 // 提交表单
 const submitForm = async () => {
@@ -190,9 +191,9 @@ const submitForm = async () => {
           duration: 2000
         });
         
-        // 跳转到聊天页面
+        const redirect = route.query.redirect || '/chat';
         setTimeout(() => {
-          router.push('/chat');
+          router.push(redirect);
         }, 1000);
       }
     } catch (error) {

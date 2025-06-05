@@ -12,7 +12,6 @@ import { API_BASE_URL } from './config';
  */
 export const sendChatMessage = async (params) => {
   try {
-    console.log('发送聊天消息:', params);
     
     const response = await fetch(`${API_BASE_URL}/api/chat/stream`, {
       method: 'POST',
@@ -42,13 +41,11 @@ export const sendChatMessage = async (params) => {
       try {
         const { value, done } = await reader.read();
         if (done) {
-          console.log('Stream completed');
           params.onMessage('[DONE]');
           return;
         }
 
         const chunk = decoder.decode(value, { stream: true });
-        console.log('收到数据块:', chunk);
         
         // 处理数据块
         if (chunk.includes('data:')) {
@@ -65,7 +62,6 @@ export const sendChatMessage = async (params) => {
                 // 提取 delta.content
                 if (data.choices?.[0]?.delta?.content !== undefined) {
                   const content = data.choices[0].delta.content;
-                  console.log('提取的内容:', content);
                   params.onMessage(content);
                 }
               } catch (error) {
@@ -73,7 +69,6 @@ export const sendChatMessage = async (params) => {
               }
 
               if (dataContent === '[DONE]') {
-                console.log('收到 [DONE] 标记');
                 params.onMessage('[DONE]');
                 continue;
               }
@@ -95,7 +90,6 @@ export const sendChatMessage = async (params) => {
 
     return {
       close: () => {
-        console.log('关闭流');
         reader.cancel();
       }
     };

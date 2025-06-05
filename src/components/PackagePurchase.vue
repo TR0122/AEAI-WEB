@@ -262,7 +262,7 @@ const closeLoginModal = () => {
 const goToLogin = () => {
   showLoginModal.value = false;
   router.push({
-    path: '/package-login',
+    path: '/login',
     query: { redirect: '/packages' }
   });
 };

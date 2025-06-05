@@ -220,7 +220,6 @@ const refreshUserInfo = async () => {
     
     // 调用获取用户信息的 API
     const response = await getUserInfo(userInfoStorage.id);
-    console.log('获取到的用户信息:', response);
     
     if (response.code === 200) {
       // 更新本地存储的用户信息
@@ -242,13 +241,11 @@ const refreshUserInfo = async () => {
         type: response.data.userType
       };
       
-      console.log('更新后的积分:', userInfo.value.points);
       
       // 强制重新渲染
       nextTick(() => {
         // 可以添加一些视觉反馈，比如闪烁积分数字
         const pointsElement = document.querySelector('.points-value');
-        console.log('找到积分元素:', pointsElement);
         
         if (pointsElement) {
           // 添加高亮动画
@@ -280,13 +277,11 @@ const startPollingPaymentResult = () => {
   paymentTimer.value = setInterval(async () => {
     try {
       const result = await queryPaymentResult(orderId.value);
-      console.log('支付查询结果:', result);
       
       if (result.code === 200) {
         // 适应新的响应格式
         const responseData = result.data;
         const status = responseData.payment_status;
-        console.log('支付状态:', status);
         
         paymentStatus.value = status;
         
@@ -363,11 +358,6 @@ const removeImage = (index) => {
 // 提交反馈
 const submitFeedback = () => {
   // 处理反馈提交逻辑
-  console.log({
-    type: selectedFeedbackType.value,
-    content: feedbackContent.value,
-    images: uploadedImages.value
-  });
 };
 
 // 处理头像上传
@@ -385,7 +375,6 @@ const handleAvatarUpload = (event) => {
 // 保存用户信息
 const saveUserInfo = () => {
   // 处理保存逻辑
-  console.log('保存用户信息:', userDetail);
 };
 
 // 获取积分规则列表

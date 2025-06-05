@@ -14,8 +14,9 @@ import 'prismjs/components/prism-java';
 import 'prismjs/components/prism-json';
 import 'prismjs/components/prism-markdown';
 import SettingsModal from './SettingsModal.vue';
-import { getConversationList, createConversation, getConversationMessages } from '../api/conversation';
-import { ElMessage, ElImage } from 'element-plus';
+import ChatItem from './ChatItem.vue';
+import { getConversationList, createConversation, getConversationMessages, renameConversation, deleteConversation } from '../api/conversation';
+import { ElMessage, ElImage, ElMessageBox } from 'element-plus';
 import { sendChatMessage } from '../api/chat';
 
 // 修改 marked 配置
@@ -485,14 +486,12 @@ const sendMessage = async () => {
       question: question,
       messageType: 'text',
       onMessage: (content) => {
-        console.log('收到消息内容:', content);
         
         // 查找助手消息
         const index = chatHistory.value.findIndex(msg => msg.id === assistantMessage.id);
         if (index !== -1) {
           if (content === '[DONE]') {
             // 消息结束，关闭加载动画和流式显示
-            console.log('消息接收完成，关闭加载动画');
             
             // 直接修改对象属性
             const updatedMessage = { ...chatHistory.value[index] };
@@ -509,8 +508,6 @@ const sendMessage = async () => {
             
             // 替换整个对象
             chatHistory.value.splice(index, 1, updatedMessage);
-            
-            console.log('更新后的内容:', updatedMessage.content);
           }
           
           // 强制更新视图并滚动到底部
@@ -819,15 +816,51 @@ const showMoreMenu = (chat) => {
 };
 
 // 重命名对话
-const renameChat = (chat) => {
-  // TODO: 实现重命名逻辑
+const renameChat = async (chat) => {
   activeMoreMenu.value = null;
+  try {
+    const { value } = await ElMessageBox.prompt('请输入新的对话名称', '重命名', {
+      inputValue: chat.title,
+      confirmButtonText: '确定',
+      cancelButtonText: '取消'
+    });
+    if (value) {
+      const res = await renameConversation(chat.id, value);
+      if (res.code === 200) {
+        chat.title = value;
+        ElMessage.success('重命名成功');
+      }
+    }
+  } catch (err) {
+    if (err !== 'cancel') {
+      ElMessage.error(err.msg || '重命名失败');
+    }
+  }
 };
 
 // 删除对话
-const deleteChat = (chat) => {
-  // TODO: 实现删除逻辑
+const deleteChat = async (chat) => {
   activeMoreMenu.value = null;
+  try {
+    await ElMessageBox.confirm('确认删除该对话吗？', '提示', { type: 'warning' });
+    const res = await deleteConversation(chat.id);
+    if (res.code === 200) {
+      chatList.value = chatList.value.filter(c => c.id !== chat.id);
+      if (selectedChat.value && selectedChat.value.id === chat.id) {
+        selectedChat.value = chatList.value[0] || null;
+        if (selectedChat.value) {
+          await selectChat(selectedChat.value);
+        } else {
+          chatHistory.value = [];
+        }
+      }
+      ElMessage.success('删除成功');
+    }
+  } catch (err) {
+    if (err !== 'cancel') {
+      ElMessage.error(err.msg || '删除失败');
+    }
+  }
 };
 
 // 点击其他地方关闭菜单
@@ -920,41 +953,17 @@ const openInNewTab = () => {
           <div class="time-divider">{{ groupTime }}</div>
           
           <!-- 该时间组下的对话列表 -->
-          <div 
-            v-for="chat in group" 
-          :key="chat.id"
-          class="chat-item"
-          :class="{ 'active': selectedChat && selectedChat.id === chat.id }"
-        >
-          <div class="chat-item-content">
-              <div class="chat-info" @click="selectChat(chat)">
-              <div class="chat-title">{{ chat.title }}</div>
-            </div>
-              <!-- 更多按钮和菜单 -->
-              <div class="chat-actions">
-                <button 
-                  class="more-btn"
-                  @click.stop="showMoreMenu(chat)"
-                >
-                  <i class="fas fa-ellipsis"></i>
-                </button>
-                <!-- 更多操作菜单 -->
-                <div 
-                  v-show="activeMoreMenu === chat.id" 
-                  class="more-menu"
-                >
-                  <button class="menu-item" @click.stop="renameChat(chat)">
-                    <i class="fas fa-pen"></i>
-                    重命名
-                  </button>
-                  <button class="menu-item delete" @click.stop="deleteChat(chat)">
-                    <i class="fas fa-trash"></i>
-                    删除
-                  </button>
-          </div>
-              </div>
-            </div>
-          </div>
+          <ChatItem
+            v-for="chat in group"
+            :key="chat.id"
+            :chat="chat"
+            :is-selected="selectedChat && selectedChat.id === chat.id"
+            :active-more-menu="activeMoreMenu"
+            @select="selectChat"
+            @rename="renameChat"
+            @delete="deleteChat"
+            @showMore="showMoreMenu"
+          />
         </template>
         
         <div v-if="loading && currentPage > 1" class="loading-more">
