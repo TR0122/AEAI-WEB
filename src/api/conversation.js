@@ -47,4 +47,38 @@ export const getConversationMessages = async (params) => {
   } catch (error) {
     throw error;
   }
-}; 
+};
+
+/**
+ * 重命名对话
+ * @param {number} conversationId - 对话ID
+ * @param {string} title - 新标题
+ * @returns {Promise}
+ */
+export const renameConversation = async (conversationId, title) => {
+  try {
+    const response = await request.post('/api/conversations/rename', {
+      conversationId,
+      title
+    });
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
+
+/**
+ * 删除对话
+ * @param {number} conversationId - 对话ID
+ * @returns {Promise}
+ */
+export const deleteConversation = async (conversationId) => {
+  try {
+    const response = await request.post('/api/conversations/delete', {
+      conversationId
+    });
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};

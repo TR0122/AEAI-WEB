@@ -1,5 +1,5 @@
 // API 配置文件
-export const API_BASE_URL = 'http://192.168.31.61:8081';
+export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 // 请求超时时间
 export const TIMEOUT = 10000;
